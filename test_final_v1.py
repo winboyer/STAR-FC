@@ -72,10 +72,11 @@ flag=1
 
 if flag == 1:
 
-    cfg = Config.fromfile("./src/configs/cfg_gcn_ms1m.py")
+    cfg = Config.fromfile("./src/configs/cfg_gcn_facefeat.py")
     cfg.eval_interim = False
 
-    target = "part1_test"
+#     target = "part1_test"
+    target = 'facefeat_test'
     feature_path = "./data/features"
 
     #model_path_list=['train_model_sample7']
@@ -138,13 +139,15 @@ if flag == 1:
                 HEAD_test1.cuda()
                 features = features.cuda()
                 adj = adj.cuda()
-                labels = labels.cuda()
+#                 labels = labels.cuda()
 
             model.eval()
             HEAD_test1.eval()
-            test_data = [[features, adj, labels]]
+#             test_data = [[features, adj, labels]]
+            test_data = [[features, adj]]
 
-            for threshold1 in [0.7]:
+#             for threshold1 in [0.7]:
+            for threshold1 in [0.35]:
                 with Timer('Inference'):
                     with Timer('First-0 step'):
                         with torch.no_grad():
@@ -181,11 +184,13 @@ if flag == 1:
                         edges=np.array(edges)
 
                     with Timer('First step'):
-                        adj2 = csr_matrix((value, (edges[:,0].tolist(), edges[:,1].tolist())), shape=(584013, 584013))
+#                         adj2 = csr_matrix((value, (edges[:,0].tolist(), edges[:,1].tolist())), shape=(584013, 584013))
+                        adj2 = csr_matrix((value, (edges[:,0].tolist(), edges[:,1].tolist())), shape=(12967, 12967))
                         link_num = np.array(adj2.sum(axis=1))
                         common_link = adj2.dot(adj2)
 
-                    for threshold2 in [0.72]:
+#                     for threshold2 in [0.72]:
+                    for threshold2 in [0.5]:
                         with Timer('Second step'):
                             edges_new = []
                             edges = np.array(edges)
@@ -200,7 +205,16 @@ if flag == 1:
                                     print(i)
 
                         with Timer('Last step'):
-                            pre_labels = edge_to_connected_graph(edges_new, 584013)
+#                             pre_labels = edge_to_connected_graph(edges_new, 584013)
+                            pre_labels = edge_to_connected_graph(edges_new, 12967)
+                            print('pre_labels=========', pre_labels)
+                            print('len(pre_labels)=========', len(pre_labels))
+                            print('num(pre_labels)=========', len(set(pre_labels)))
+                            ofn = './pre_labels.meta'
+                            with open(ofn, 'w') as of:
+                                for idx in range(len(pre_labels)):
+                                    of.write(str(pre_labels[idx]) + '\n')
+                            of.close()
                         
 #                         gt_labels = np.load('./pretrained_model/gt_labels.npy')
 #                         label_path = './data/labels/part1_test.meta'

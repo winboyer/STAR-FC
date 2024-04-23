@@ -9,7 +9,8 @@ from utils import sparse_mx_to_torch_sparse_tensor, build_knns,fast_knns2spmat,b
 import logging
 import numpy as np
 import torch.optim as optim
-from src.models.gcn import HEAD, HEAD_cat, HEAD_test, select_encoder, Distance_learner
+# from src.models.gcn import HEAD, HEAD_cat, HEAD_test, select_encoder, Distance_learner
+from src.models.gcn import HEAD, HEAD_test, select_encoder, Distance_learner
 import datetime
 import os
 import linecache
@@ -18,7 +19,7 @@ import faiss
 from PIL import Image
 import torchvision.transforms as transforms
 from operator import itemgetter
-from data import ImageFolder
+# from data import ImageFolder
 from collections import OrderedDict
 import time
 

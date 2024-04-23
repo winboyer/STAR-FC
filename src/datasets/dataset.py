@@ -29,6 +29,7 @@ class GCNDataset(object):
                 self.cls_num = len(self.lb2idxs)
                 self.gt_labels = intdict2ndarray(self.idx2lb)
                 self.ignore_label = False
+#                 self.ignore_label = -1
             else:
                 self.inst_num = -1
                 self.ignore_label = True
@@ -42,10 +43,13 @@ class GCNDataset(object):
 
         with Timer('Compute center feature'):
             self.center_fea = np.zeros((self.cls_num, self.features.shape[1]))
+#             print('self.lb2idxs=======', self.lb2idxs)
+#             print('self.gt_labels=========', self.gt_labels)
+#             print('len(self.gt_labels)=========', len(self.gt_labels))
             for i in range(self.cls_num):
-                self.center_fea[i] = np.mean(self.features[self.lb2idxs[i]],0)
+                self.center_fea[i] = np.mean(self.features[self.lb2idxs[self.gt_labels[i]]],0)
+#                 self.center_fea[i] = np.mean(self.features[self.lb2idxs[i]],0)
             self.center_fea = l2norm(self.center_fea)
-
 
         with Timer('read knn graph'):
             if os.path.isfile(knn_graph_path):
